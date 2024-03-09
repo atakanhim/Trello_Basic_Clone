@@ -10,15 +10,19 @@
 
 .board-lists {
     list-style: none;
-    padding: 0;
+    display:flex;
+    padding: 10px;
+
 }
 
 .list {
-    display: inline-block;
-    margin: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    display:flex;
+    align-items:center;
+    flex-direction:column;
+    min-width:150px;
+    border: 1px solid red;
+
+
 }
 
 .list-title {
@@ -28,6 +32,9 @@
 .list-cards {
     list-style: none;
     padding: 0;
+    border:1px solid blue;
+    width:100%;                                                                                                                                                                     
+    min-height:90%;
 }
 
 .card {

@@ -40,7 +40,6 @@ namespace trelloClone.Persistence.Repositories
         public async  Task<T?> GetAsync(Expression<Func<T, bool>> filter)
         {
             var x = await Table
-                     .AsNoTracking()
                      .Where(filter)
                      .FirstOrDefaultAsync();
 

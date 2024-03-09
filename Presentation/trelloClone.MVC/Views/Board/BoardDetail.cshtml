@@ -74,7 +74,19 @@
                             console.log("bulundugu index:" + newPosition);
                             console.log("-------------------------");
 
+                            // Her kartın position değerini güncelle
+                            const cardData = {
+                                cardId: cardId,
+                                listId: newListId, // Assuming newListId is available from previous code
+                                position: newPosition,
+                            };
 
+                            $.ajax({
+                                url: "/Card/updateCardPosition",
+                                type: "POST",
+                                contentType: "application/json; charset=utf-8", // Specify JSON data
+                                data: JSON.stringify(cardData), // Convert data object to JSON string
+                            });
                       
                             // Kartın güncellenmiş bilgilerini sunucuya gönder
                            

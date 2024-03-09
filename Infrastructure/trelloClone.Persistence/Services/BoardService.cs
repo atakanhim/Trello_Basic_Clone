@@ -44,8 +44,12 @@ namespace trelloClone.Persistence.Services
 
             try
             {
-       
-                Board board = await _boardRepository.Table.Include(x => x.Lists).ThenInclude(y => y.Cards).Where(x => x.Id == boardId).FirstOrDefaultAsync();
+
+                Board? board = await _boardRepository.Table
+                    .Include(x => x.Lists.OrderBy(y => y.Position))
+                    .ThenInclude(y => y.Cards.OrderBy(z => z.Position))
+                    .Where(x => x.Id == boardId)
+                    .FirstOrDefaultAsync();
 
                 BoardDTO boarddto = _mapper.Map<Board, BoardDTO>(board);
 
