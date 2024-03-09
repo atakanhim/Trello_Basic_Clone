@@ -1,0 +1,18 @@
+﻿@model IEnumerable<ListBoardViewModel> // Specify the model type
+
+@{
+    ViewData["Title"] = "Board";
+}
+
+<div>
+    <h1>Boards</h1>
+
+    <ul>
+        @foreach (var board in Model)
+        {
+            <li>
+                <h2>@board.BoardName</h2>  - <p>@board.Id</p>
+            </li>
+        }
+    </ul>
+</div>
