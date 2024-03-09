@@ -1,0 +1,89 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Board Title";
+}
+<head>
+    <link rel="stylesheet" href="~/css/BoardDetail.css" asp-append-version="true" />
+</head>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="board">
+                <div class="board-title">
+                    <h2>Board Başlığı</h2>
+                </div>
+                <div class="board-lists">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Anime Section End -->
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Listeleri ve kartları JSON ile al
+            $.ajax({
+                url: "/Board/GetBoardWithIncludes/" + @ViewBag.BoardId,
+                type: "GET",
+                success: function (data) {
+                    // Listeleri ekle
+                    for (var i = 0; i < data.lists.length; i++) {
+                        var list = data.lists[i];
+                        $(".board-lists").append(
+                            '<div class="list" data-list-id="' + list.id + '">' +
+                            '<div class="list-title">' +
+                            list.title +
+                            '</div>' + 
+                            '<ul class="list-cards">' +
+                            // Kartları buraya ekleyeceksiniz
+                            '</ul>' +
+                            '</div>'
+                        );
+
+                        // Kartları ekle
+                        for (var j = 0; j < list.cards.length; j++) {
+                            var card = list.cards[j];
+                            $(".list-cards").last().append(
+                                '<li class="card" data-card-id="' + card.id + '">' +
+                                '<div class="card-title">' +
+                                card.title +
+                                '</div>' +
+                                '<div class="card-description">' +
+                                card.description +
+                                '</div>' +
+                                '</li>'
+                            );
+                        }
+                    }
+
+                    // Sıralama işlevini ekle
+                    $(".list-cards").sortable({
+                        connectWith: ".list-cards",
+                        helper: "clone",
+                        update: function (event, ui) {
+        
+                            var newPosition = ui.item.index();
+                            var cardId = ui.item.attr("data-card-id");
+                            var newListId = ui.item.parent().parent().attr("data-list-id");
+                            console.log("-------------------------");
+                            console.log("bulundugu listId :"+ newListId);
+                            console.log("oynatılan cardId :"+ cardId);
+                            console.log("bulundugu index:" + newPosition);
+                            console.log("-------------------------");
+
+
+                      
+                            // Kartın güncellenmiş bilgilerini sunucuya gönder
+                           
+                        },
+                    }).sortable("enable");
+                },
+            });
+        });
+
+    </script>
+
+}

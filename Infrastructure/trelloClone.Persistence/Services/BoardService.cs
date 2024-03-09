@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,25 @@ namespace trelloClone.Persistence.Services
             }
 
         }
+        public async Task<BoardDTO> GetBoardWithIncludes(int boardId)
+        {
+
+            try
+            {
+       
+                Board board = await _boardRepository.Table.Include(x => x.Lists).ThenInclude(y => y.Cards).Where(x => x.Id == boardId).FirstOrDefaultAsync();
+
+                BoardDTO boarddto = _mapper.Map<Board, BoardDTO>(board);
+
+                return boarddto;
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
         public async Task CreateBoard(string boardName, string appUserId)
         {
             try
@@ -53,5 +73,7 @@ namespace trelloClone.Persistence.Services
 
             }
         }
+
+      
     }
 }

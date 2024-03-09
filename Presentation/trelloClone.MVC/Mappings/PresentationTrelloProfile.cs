@@ -11,6 +11,7 @@ namespace trelloClone.Presentation.Mappings
         public PresentationTrelloProfile()
         {
             CreateMap<ListBoardViewModel, BoardDTO>().ReverseMap();
+            CreateMap<ListBoardIncludeViewModel, BoardDTO>().ReverseMap();
 
 
         }

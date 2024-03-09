@@ -1,0 +1,36 @@
+﻿.board-list {
+    list-style: none;
+    padding: 0;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content:center;
+    width: 200px;
+
+    height: 100px;
+    margin: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    transition: all 0.5s ease-in-out;
+}   
+.card a{
+    text-decoration:none;
+    color:gray;
+}
+
+    .card:hover {
+        cursor:pointer;
+        border-color:black;
+
+    }
+
+    .card a.hovered {
+        color: black;
+
+    }
+
+

@@ -12,6 +12,7 @@ namespace trelloClone.Application.Abstractions.Services
     public interface IBoardService
     {
         Task<IEnumerable<BoardDTO>> GetBoard();
+        Task<BoardDTO> GetBoardWithIncludes(int boardId);
         Task CreateBoard(string boardName, string appUserId);
     }
 }

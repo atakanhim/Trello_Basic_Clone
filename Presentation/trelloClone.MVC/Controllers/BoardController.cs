@@ -8,7 +8,7 @@ using trelloClone.MVC.Models;
 
 namespace trelloClone.MVC.Controllers
 {
-    [Authorize]
+   // [Authorize]
     public class BoardController : Controller
     {
         private readonly IBoardService _boardService;
@@ -29,18 +29,23 @@ namespace trelloClone.MVC.Controllers
             IEnumerable<ListBoardViewModel> listViewModel = _mapper.Map<IEnumerable<BoardDTO>, IEnumerable<ListBoardViewModel>>(listDTO);
 
 
-            return View();
+            return View(listViewModel);
         }
 
-        public IActionResult BoardDetail()
+        public async Task<IActionResult> BoardDetail(int id)
         {
-            // Token'ı session'dan alın
-            var token = HttpContext.Session.GetString("Token");
-
-            // Token ile yetkilendirme işlemi yapın
+            ViewBag.BoardId = id;
 
             return View();
         }
 
+        [HttpGet]
+        [Route("Board/GetBoardWithIncludes/{boardId?}")]
+        public async Task<IActionResult> GetBoardWithIncludes( int boardId)
+        {
+            var board = await _boardService.GetBoardWithIncludes(boardId);
+            var listViewModel = _mapper.Map<BoardDTO, ListBoardIncludeViewModel>(board);
+            return Ok(listViewModel);
+        }
     }
 }

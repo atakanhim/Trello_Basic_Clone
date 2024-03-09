@@ -1,18 +1,39 @@
-﻿@model IEnumerable<ListBoardViewModel> // Specify the model type
-
+﻿
 @{
     ViewData["Title"] = "Board";
 }
 
-<div>
-    <h1>Boards</h1>
+@model IEnumerable<ListBoardViewModel>
+<head>
+    <link rel="stylesheet" href="~/css/Board.css" asp-append-version="true" />
+</head>
+<ul class="board-list">
+    @foreach (var board in Model)
+    {
+        <li class="card">
+            <a href="@Url.Action("BoardDetail", "Board", new { id = board.Id })">
+                
+                    <p class="card-text">@board.BoardName</p>
+           
+            </a>
+        </li>
+    }
+</ul>
 
-    <ul>
-        @foreach (var board in Model)
-        {
-            <li>
-                <h2>@board.BoardName</h2>  - <p>@board.Id</p>
-            </li>
-        }
-    </ul>
-</div>
+
+<!-- Anime Section End -->
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $(".card").on("mouseenter", function () {
+                $(this).addClass("hovered");            
+                $(this).children("a").addClass("hovered");
+            });
+            $(".card").on("mouseleave", function () {
+                $(this).removeClass("hovered");
+                $(this).children("a").removeClass("hovered");
+            });
+        });
+    </script>
+
+}
