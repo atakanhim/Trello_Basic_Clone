@@ -61,17 +61,7 @@ namespace trelloClone.MVC.Controllers
             return Ok("Eklendi");
 
         }    
-        [HttpPost]
-        [Route("CreateList")]
-        public async Task<IActionResult> CreateList([FromBody] CreateListViewModel model)
-        {
-
-            await _listService.CreateList(model.Title, model.BoardId);
-
-
-
-            return Ok("Eklendi");
-        }  
+  
         [HttpPost]
         [Route("CreateCard")]
         public async Task<IActionResult> CrateCard([FromBody] CreateCardViewModel model)

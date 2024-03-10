@@ -8,7 +8,7 @@ using trelloClone.MVC.Models;
 
 namespace trelloClone.MVC.Controllers
 {
-   // [Authorize]
+    //[Authorize]
     public class BoardController : Controller
     {
         private readonly IBoardService _boardService;

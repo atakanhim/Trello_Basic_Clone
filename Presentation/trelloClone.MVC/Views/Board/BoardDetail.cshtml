@@ -14,6 +14,12 @@
             <div class="board">
                 <div class="board-title">
                     <h2 id="boardH2"></h2>
+                    <div>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Liste Oluştur
+                        </button>
+                  
+                    </div>
                 </div>
                 <div class="board-lists" id="listelervecardlar">
                     @* kartlar ve listeler listeneliyor *@
@@ -24,133 +30,307 @@
         </div>
     </div>
 </div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal Başlık</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Input alanı -->
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label">Liste İsmi</label>
+                    <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Örnek liste ismi">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-primary" onclick="saveAndCloseModal()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- Anime Section End -->
 @section Scripts {
     <script>
-
-        $(document).ready(function () {
-          
-
+        var selectedListId;
+        $(document).ready(function () {        
             // Listeleri ve kartları JSON ile al
             $.ajax({
                 url: "/Board/GetBoardWithIncludesPartial/" + @ViewBag.BoardId,
                 type: "GET",
                 success: function (data) {
                     $("#boardH2").text("@ViewBag.BoardName");
-
                     $("#listelervecardlar").html(data);
                     // Sıralama işlevini ekle
-                    $(".list-cards").sortable({
-        
-                        connectWith: ".list-cards",
-                        containment: ".board-lists",
-                    
-                        helper: "clone",
-                        start: function (event, ui) {
-                            // Sürükleme işlemi başladığında yapılacak işlemler buraya gelecek
-                            ui.helper.addClass("dragging"); // Yardımcı öğeyi belirtmek için sınıf ekleyin
-                        },
-                        stop: function (event, ui) {
-                            // Sürükleme işlemi bittiğinde yapılacak işlemler buraya gelecek
-                            ui.item.removeClass("dragging"); // Yardımcı öğeden sınıfı kaldırın
-                        },
-                        update: function (event, ui) {
-        
-                            var newPosition = ui.item.index();
-                            var cardId = ui.item.attr("data-card-id");
-                            var newListId = ui.item.parent().parent().parent().attr("data-list-id");
-                         
-                            // console.log("poz : "+ newPosition)
-                            // console.log("card : " + cardId)
-                            // console.log("newlist : " + newListId)
-                            
-                            const cardData = {
-                                cardId: cardId,
-                                listId: newListId, 
-                                position: newPosition,
-                            };
-
-                            $.ajax({
-                                url: "/Card/updateCardPosition",
-                                type: "POST",
-                                contentType: "application/json; charset=utf-8", 
-                                data: JSON.stringify(cardData), 
-                                success: function (data) {
-                                    // sayfadaki cardları yeniden çek
-                                }
-                            });
-                      
-                           
-                        },
-                    }).disableSelection();
-
-                    $(".board-lists").sortable({
-                        connectWith: ".list",
-                        helper: "clone",
-                        placeholder: "sortable-placeholder",
-                        start: function (event, ui) {
-                            // Sürükleme işlemi başladığında yapılacak işlemler buraya gelecek
-                            ui.helper.addClass("draggingList"); // Yardımcı öğeyi belirtmek için sınıf ekleyin
-                        },
-                        stop: function (event, ui) {
-                            // Sürükleme işlemi bittiğinde yapılacak işlemler buraya gelecek
-                            ui.item.removeClass("draggingList"); // Yardımcı öğeden sınıfı kaldırın
-                        },
-                        update: function (event, ui) {
-                            // Sürükleme işlemi sırasında güncelleme işlemleri buraya gelecek
-                            // var cardId = ui.item.attr("data-card-id");
-                            // var newListId = ui.item.parent().parent().attr("data-list-id");
-                            // var newPosition = ui.item.index();
-                            console.log(ui.item);
-                            var newPosition = ui.item.index();
-                            var _listId = ui.item.attr("data-list-id")
-                            console.log(newPosition);
-
-                            const listData = {
-                                listId: _listId,
-                                position: newPosition,
-                            };
-
-
-                            $.ajax({
-                                url: "/List/updateListPosition",
-                                type: "POST",
-                                contentType: "application/json; charset=utf-8",
-                                data: JSON.stringify(listData),
-                                success: function (data) {
-                                    // sayfadaki cardları yeniden çek
-                                }
-                            });
-                            // AJAX isteği ile kartın pozisyonunu güncelleme işlemleri buraya gelecek
-                        },
-                    }).disableSelection();
+                    sortables();
                 },
             });
+
+            $('#listSil').on('click', function () {
+                // İşlev burada tanımlanır
+                // Örnek: bir alert kutusu görüntüleme
+                alert('Butona tıklandı! Silme işlemi burada gerçekleştirilebilir.');
+            });
         });
+        function silListModal(id) {
+            // Değerin boş olup olmadığını kontrol et
+            Swal.fire({
+                title: "Silmek istediğine emin misin",
+                showCancelButton: true,
+                confirmButtonText: "Sil",
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        url: "/List/DeleteList/" + id,
+                        type: "GET",
+                        success: function () {
+                            // Sıralama işlevini ekle
+                            list();
+                            Swal.fire("Silme başarılı!", "", "success");
+                         
+                        },
+                        error: function (error) {
+
+                            var errormsg = error.responseJSON.Message;
+                            Swal.fire(errormsg, "", "error");
+                     
+                        }
+                    });
+
+                } 
+            });
+
+
+        }
+        function silCard(id) {
+            // Değerin boş olup olmadığını kontrol et
+            Swal.fire({
+                title: "Silmek istediğine emin misin",
+                showCancelButton: true,
+                confirmButtonText: "Sil",
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        url: "/Card/DeleteCard/" + id,
+                        type: "GET",
+                        success: function () {
+                            // Sıralama işlevini ekle
+                            list();
+                            Swal.fire("Silme başarılı!", "", "success");
+
+                        },
+                        error: function (error) {
+
+                            var errormsg = error.responseJSON.Message;
+                            Swal.fire(errormsg, "", "error");
+
+                        }
+                    });
+
+                }
+            });
+
+
+        }
+        function sortables() {
+            $(".list-cards").sortable({
+
+                connectWith: ".list-cards",
+                containment: ".board-lists",
+
+                helper: "clone",
+                start: function (event, ui) {
+                    // Sürükleme işlemi başladığında yapılacak işlemler buraya gelecek
+                    ui.helper.addClass("dragging"); // Yardımcı öğeyi belirtmek için sınıf ekleyin
+                },
+                stop: function (event, ui) {
+                    // Sürükleme işlemi bittiğinde yapılacak işlemler buraya gelecek
+                    ui.item.removeClass("dragging"); // Yardımcı öğeden sınıfı kaldırın
+                },
+                update: function (event, ui) {
+
+                    var newPosition = ui.item.index();
+                    var cardId = ui.item.attr("data-card-id");
+                    var newListId = ui.item.parent().parent().parent().attr("data-list-id");
+
+                    // console.log("poz : "+ newPosition)
+                    // console.log("card : " + cardId)
+                    // console.log("newlist : " + newListId)
+
+                    const cardData = {
+                        cardId: cardId,
+                        listId: newListId,
+                        position: newPosition,
+                    };
+
+                    $.ajax({
+                        url: "/Card/updateCardPosition",
+                        type: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(cardData),
+                        success: function (data) {
+                            // sayfadaki cardları yeniden çek
+                        }
+                    });
+
+
+                },
+            }).disableSelection();
+
+            $(".board-lists").sortable({
+                connectWith: ".list",
+                helper: "clone",
+                placeholder: "sortable-placeholder",
+                start: function (event, ui) {
+                    // Sürükleme işlemi başladığında yapılacak işlemler buraya gelecek
+                    ui.helper.addClass("draggingList"); // Yardımcı öğeyi belirtmek için sınıf ekleyin
+                },
+                stop: function (event, ui) {
+                    // Sürükleme işlemi bittiğinde yapılacak işlemler buraya gelecek
+                    ui.item.removeClass("draggingList"); // Yardımcı öğeden sınıfı kaldırın
+                },
+                update: function (event, ui) {
+                    // Sürükleme işlemi sırasında güncelleme işlemleri buraya gelecek
+                    // var cardId = ui.item.attr("data-card-id");
+                    // var newListId = ui.item.parent().parent().attr("data-list-id");
+                    // var newPosition = ui.item.index();
+                    var newPosition = ui.item.index();
+                    var _listId = ui.item.attr("data-list-id")
+
+                    const listData = {
+                        listId: _listId,
+                        position: newPosition,
+                    };
+
+
+                    $.ajax({
+                        url: "/List/updateListPosition",
+                        type: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(listData),
+                        success: function (data) {
+                            // sayfadaki cardları yeniden çek
+                            // list()
+                        }
+                    });
+                    // AJAX isteği ile kartın pozisyonunu güncelleme işlemleri buraya gelecek
+                },
+            }).disableSelection();
+        }
+        function list() {
+            $.ajax({
+                url: "/Board/GetBoardWithIncludesPartial/" + @ViewBag.BoardId,
+                type: "GET",
+                success: function (data) {
+
+                    $("#listelervecardlar").html(data);
+                    sortables();
+                },
+            });
+        }
+        function saveAndCloseModal() {
+            // Modal içindeki input alanının değerini al
+            var inputVal = document.getElementById('exampleFormControlInput1').value;
+            // Değerin boş olup olmadığını kontrol et
+            if (inputVal.trim() === '') {
+                alert('Lütfen bir değer giriniz.');
+                return; // Fonksiyondan çık
+            }
+            // Değer varsa alert göster
+            const CreateList = {
+                title: inputVal,
+                boardId: @ViewBag.BoardId,
+            };
+
+            $.ajax({
+                url: "/List/CreateList",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(CreateList),
+                success: function (data) {
+                    // sayfadaki cardları yeniden çek
+                    list();
+                    $('#exampleModal input[type="text"]').val('');
+                    Swal.fire("Liste başarılı bir şekilde eklendi!", "", "success");
+
+                },
+                error: function () {
+                    var errormsg = error.responseJSON.Message;
+                    if (errormsg)
+                        Swal.fire(errormsg, "", "error");
+                    else
+                        Swal.fire("Ekleme Başarısız", "", "error");
+
+                }
+            });
+
+            // Modalı kapat
+            $('#exampleModal').modal('hide');//modal_1 is the id 1
+
+        }
+        function ekleCardModal() {
+            // Modal içindeki input alanının değerini al
+            var cardName = document.getElementById('cardName').value;
+            var cardDesc = document.getElementById('cardDesc').value;
+            // Değerin boş olup olmadığını kontrol et
+            if (cardName.trim() === '') {
+                alert('Lütfen kard adını giriniz.');
+                return; // Fonksiyondan çık
+            }
+            if (cardDesc.trim() === '') {
+                alert('Lütfen kard açıklmasını giriniz.');
+                return; // Fonksiyondan çık
+            }
+            // Değer varsa alert göster
+            const CreateCard = {
+                ListId: selectedListId,
+                Title: cardName,
+                Description: cardDesc,
+               
+            };
+
+            $.ajax({
+                url: "/Card/CreateCard",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(CreateCard),
+                success: function (data) {
+                    // sayfadaki cardları yeniden çek
+                    list();
+                    $('#exampleModal3 input[type="text"]').val('');
+                    Swal.fire("Kart başarılı bir şekilde eklendi!", "", "success");
+
+                },
+                error: function () {
+                    var errormsg = error.responseJSON.Message;
+                    if(errormsg)
+                    Swal.fire(errormsg, "", "error");
+                    else
+                        Swal.fire("Ekleme Başarısız", "", "error");
+
+                }
+            });
+
+            // Modalı kapat
+            $('#exampleModal3').modal('hide');//modal_1 is the id 1
+        }
+        function setListId(listId) {
+            selectedListId = listId; // Seçilen liste ID'sini değişkene ata
+        }
     </script>
 
     
-    <script>
-        $(document).ready(function () {
-            // Modalı açan butonun click olayı
-            $("#openModalBtn").click(function () {
-                alert("alerttt")
-
-                $("#myModal").css("display", "block"); // Modalı görünür yapar
-            });
-
-            // Kapatma düğmesine tıklandığında, modalı gizler
-            $(".close").click(function () {
-                $("#myModal").css("display", "none");
-            });
-
-            // Kullanıcı modalın dışına tıkladığında, modalı gizler
-            $(window).click(function (event) {
-                if (event.target.id === "myModal") {
-                    $("#myModal").css("display", "none");
-                }
-            });
-        });
-    </script>
+ 
 
 }

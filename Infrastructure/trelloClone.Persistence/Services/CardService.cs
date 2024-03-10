@@ -13,7 +13,7 @@ using trelloClone.Domain.Entities;
 
 namespace trelloClone.Persistence.Services
 {
-    public class CardService:ICardService
+    public class CardService : ICardService
     {
         private readonly ICardRepository _cardRepository;
         private readonly IListRepository _listRepository;
@@ -29,15 +29,85 @@ namespace trelloClone.Persistence.Services
         {
             try
             {
-                var card = new Card() { ListId = listId, Title = title ,Description = desc};
+                var card = new Card() { ListId = listId, Title = title, Description = desc};
+                var cardList = await _cardRepository.GetListAsync();
+                if (!(cardList == null || cardList.Count == 0))
+                {
+                    var maksPozisyon = cardList.Max(x => x.Position);
+                    card.Position = maksPozisyon + 1;
+                }
+
+
+
                 await _cardRepository.AddAsync(card);
                 await _cardRepository.SaveAsync();
+
+
+
 
             }
             catch (Exception)
             {
                throw;
             }
+        }
+
+        public async Task<bool> DeleteCard(int cardId)
+        {
+            try
+            {
+                Card? card = await _cardRepository.GetAsync(x => x.Id == cardId);
+                if(card==null)
+                    throw new Exception("Card Bulunamadı");
+
+                _cardRepository.Delete(card);
+                await _cardRepository.SaveAsync();
+
+
+                int cardBulunduguListId = card.ListId;
+
+                var list = await _listRepository.Table.Include(y => y.Cards.OrderBy(z => z.Position)).Where(c => c.Id == cardBulunduguListId).FirstOrDefaultAsync();
+
+                if (list == null)
+                    throw new Exception("Liste Bulunamadı");
+
+                int newPosition = 0;
+                foreach (var listCarditem in list.Cards)
+                {
+                    listCarditem.Position = newPosition;
+                    newPosition++;
+                }
+                await _listRepository.SaveAsync();
+
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            //try
+            //{
+            //    var card = await _cardRepository.Table.Include(x => x.Cards).Where(x => x.Id == listId).FirstOrDefaultAsync();
+            //    if (list == null)
+            //        throw new Exception("Liste Bulunamadı");
+
+            //    var cardsCount = list.Cards.Count();
+            //    if (cardsCount > 0)
+            //        throw new Exception("Liste dolu, Dolu liste silinemez");
+            //    else
+            //    {
+            //        _listRepository.Delete(list);
+            //        await _listRepository.SaveAsync();
+            //        return true;
+            //    }
+
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw;
+            //}
         }
 
         public async Task<IEnumerable<ListDTO>> UpdateCard(UpdateCardPositionDTO updateCard)

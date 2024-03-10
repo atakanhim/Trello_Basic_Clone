@@ -11,5 +11,7 @@ namespace trelloClone.Application.Abstractions.Services
     {
         Task CreateCard(string title, string desc, int listId);
         Task<IEnumerable<ListDTO>> UpdateCard(UpdateCardPositionDTO updateCard);
+        Task<bool> DeleteCard(int listId);
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure.Core.GeoJson;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,17 +25,64 @@ namespace trelloClone.Persistence.Services
         {
             try
             {
-                var list = new List() { BoardId = boardid, Title = title};
+                var list = new List() { BoardId = boardid, Title = title };
+
+                var listList = await _listRepository.GetListAsync();
+                if(!(listList == null || listList.Count == 0))
+                {
+                    var maksPozisyon = listList.Max(x => x.Position);
+                    list.Position = maksPozisyon + 1;
+                }
+  
                 await _listRepository.AddAsync(list);
                 await _listRepository.SaveAsync();
+
 
             }
             catch (Exception)
             {
 
-                throw;
+                throw  new Exception("Liste olsturma başarısız");
 
             }
+        }
+
+        public async Task<bool> DeleteList(int listId)
+        {
+            try
+            {
+                var list = await _listRepository.Table.Include(x => x.Cards).Where(x=>x.Id == listId).FirstOrDefaultAsync();
+                if(list == null)
+                    throw new Exception("Liste Bulunamadı");
+
+                var cardsCount = list.Cards.Count();
+                if (cardsCount > 0)
+                    throw new Exception("Liste dolu, Dolu liste silinemez");
+
+
+                else
+                {
+                    _listRepository.Delete(list);
+                    await _listRepository.SaveAsync();
+
+                    var listArray = await _listRepository.Table.OrderBy(x => x.Position).ToListAsync(); 
+                    int newPosition = 0;
+                    foreach(var listItem in listArray)
+                    {
+                        listItem.Position = newPosition;
+                        newPosition++;
+                        await _listRepository.SaveAsync();
+                    }
+                    return true;
+                }
+         
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+
         }
 
         public async Task UpdateList(UpdateListPositionDTO updateList)

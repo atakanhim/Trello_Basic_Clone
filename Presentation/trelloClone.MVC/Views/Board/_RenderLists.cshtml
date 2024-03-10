@@ -3,29 +3,58 @@
 @foreach (var list in Model)
 {
     <ul class="list" data-list-id="@list.Id">
-        <li class=" list-title">@list.Title</li>
+        <li class=" list-title" style="position:relative;">
+            @list.Title - <button data-list-id="@list.Id" type="button" style="position:absolute;right:0;top:0" class="btn btn-secondary" onclick="silListModal(@list.Id)">
+                Sil
+            </button>
+        </li>
         <li class="">
             <ul class="list-cards">
                 @foreach (var card in list.Cards)
                 {
-                    <li class="card" data-card-id="@card.Id">
+                    <li class="card" data-card-id="@card.Id" style="position:relative">
                         <div class="card-title">@card.Title</div>
                         <div class="card-description">@card.Description</div>
+                        <button type="button" style="position:absolute;right:0;top:0" class="btn btn-danger" onclick="silCard(@card.Id)">
+                            Sil
+                        </button>
                     </li>
                 }
-             
+                <li style="display:flex;align-item:center;justify-content:center;margin-top:10px;">
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal3" onclick="setListId(@list.Id)">
+                        Card Ekle
+                    </button>
+                </li>
             </ul>
         </li>
     </ul>
   
 }
 
-<div style=" margin-left:100px;margin-top:15px;">
-    <button id="openModalBtn">Modal Aç</button>
-</div>
-<div id="myModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <p>Modal içeriği buraya gelecek.</p>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel3">Modal Başlık</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Input alanı -->
+                <div class="mb-3">
+                    <label for="cardName" class="form-label">Card İsmi</label>
+                    <input type="text" class="form-control" id="cardName" placeholder="Kart ismi">
+                </div>  
+                <div class="mb-3">
+                    <label for="cardDesc" class="form-label">Card Açıklaması</label>
+                    <input type="text" class="form-control" id="cardDesc" placeholder="Kart açıklaması">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-primary" onclick="ekleCardModal()">Kaydet</button>
+            </div>
+        </div>
     </div>
 </div>

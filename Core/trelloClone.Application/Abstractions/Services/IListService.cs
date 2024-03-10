@@ -12,6 +12,7 @@ namespace trelloClone.Application.Abstractions.Services
     {
         Task CreateList(string title, int boardid);
         Task UpdateList(UpdateListPositionDTO updateList);
+        Task<bool> DeleteList(int listId);
 
 
     }
