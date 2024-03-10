@@ -10,6 +10,11 @@
         </li>
         <li class="">
             <ul class="list-cards">
+                <li style="display:flex;justify-content:center;margin-top:10px;margin-bottom:15px;" class="not-sortable">
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal3" onclick="setListId(@list.Id)">
+                        Kard Ekle
+                    </button>
+                </li>
                 @foreach (var card in list.Cards)
                 {
                     <li class="card" data-card-id="@card.Id" style="position:relative">
@@ -20,11 +25,7 @@
                         </button>
                     </li>
                 }
-                <li style="display:flex;align-item:center;justify-content:center;margin-top:10px;">
-                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal3" onclick="setListId(@list.Id)">
-                        Card Ekle
-                    </button>
-                </li>
+           
             </ul>
         </li>
     </ul>

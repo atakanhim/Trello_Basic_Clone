@@ -171,7 +171,7 @@
                     const cardData = {
                         cardId: cardId,
                         listId: newListId,
-                        position: newPosition,
+                        position: newPosition-1,
                     };
 
                     $.ajax({
@@ -186,6 +186,7 @@
 
 
                 },
+                items: "> li:not(.not-sortable)"
             }).disableSelection();
 
             $(".board-lists").sortable({
