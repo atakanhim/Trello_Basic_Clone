@@ -13,6 +13,10 @@ namespace trelloClone.Presentation.Mappings
             CreateMap<ListBoardViewModel, BoardDTO>().ReverseMap();
             CreateMap<ListBoardIncludeViewModel, BoardDTO>().ReverseMap();
             CreateMap<UpdateCardPositionViewModel, UpdateCardPositionDTO>().ReverseMap();
+            CreateMap<UpdateListPositionViewModel, UpdateListPositionDTO>().ReverseMap();
+
+
+
             CreateMap<ListDTO, ListListViewModel>().ReverseMap();
 
 
