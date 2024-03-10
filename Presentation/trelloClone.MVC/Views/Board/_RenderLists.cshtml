@@ -3,8 +3,8 @@
 @foreach (var list in Model)
 {
     <ul class="list" data-list-id="@list.Id">
-        <li class="listItemli list-title">@list.Title</li>
-        <li class="listItemli">
+        <li class=" list-title">@list.Title</li>
+        <li class="">
             <ul class="list-cards">
                 @foreach (var card in list.Cards)
                 {
@@ -19,4 +19,13 @@
     </ul>
   
 }
-<div><button>Ekle</button></div>
+
+<div style=" margin-left:100px;margin-top:15px;">
+    <button id="openModalBtn">Modal Aç</button>
+</div>
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>Modal içeriği buraya gelecek.</p>
+    </div>
+</div>
