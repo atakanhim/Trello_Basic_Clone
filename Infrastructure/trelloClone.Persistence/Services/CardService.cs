@@ -96,6 +96,8 @@ namespace trelloClone.Persistence.Services
 
                 }
 
+
+
                 IEnumerable<List> lists= await _listRepository.Table.Include(y => y.Cards.OrderBy(z => z.Position)).ToListAsync();
                 IEnumerable<ListDTO> listsDTO = _mapper.Map<IEnumerable<List>, IEnumerable<ListDTO>>(lists);
                 return listsDTO;

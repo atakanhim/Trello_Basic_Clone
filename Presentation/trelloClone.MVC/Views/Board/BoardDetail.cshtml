@@ -16,7 +16,9 @@
                 </div>
                 <div class="board-lists" id="listelervecardlar">
                     @* kartlar ve listeler listeneliyor *@
-                </div>
+                </div>  
+                
+      
             </div>
         </div>
     </div>
@@ -24,27 +26,42 @@
 <!-- Anime Section End -->
 @section Scripts {
     <script>
+
         $(document).ready(function () {
+          
+
             // Listeleri ve kartları JSON ile al
             $.ajax({
-                url: "/Board/GetBoardWithIncludes/" + @ViewBag.BoardId,
+                url: "/Board/GetBoardWithIncludesPartial/" + @ViewBag.BoardId,
                 type: "GET",
                 success: function (data) {
-                    $("#boardH2").text(data.boardName);
+                    $("#boardH2").text("@ViewBag.BoardName");
 
-                    addListsAndCards(data.lists);
-
-
+                    $("#listelervecardlar").html(data);
                     // Sıralama işlevini ekle
                     $(".list-cards").sortable({
+        
                         connectWith: ".list-cards",
+                        containment: ".board-lists",
+                    
                         helper: "clone",
+                        start: function (event, ui) {
+                            // Sürükleme işlemi başladığında yapılacak işlemler buraya gelecek
+                            ui.helper.addClass("dragging"); // Yardımcı öğeyi belirtmek için sınıf ekleyin
+                        },
+                        stop: function (event, ui) {
+                            // Sürükleme işlemi bittiğinde yapılacak işlemler buraya gelecek
+                            ui.item.removeClass("dragging"); // Yardımcı öğeden sınıfı kaldırın
+                        },
                         update: function (event, ui) {
         
                             var newPosition = ui.item.index();
                             var cardId = ui.item.attr("data-card-id");
-                            var newListId = ui.item.parent().parent().attr("data-list-id");
-  
+                            var newListId = ui.item.parent().parent().parent().attr("data-list-id");
+                         
+                            // console.log("poz : "+ newPosition)
+                            // console.log("card : " + cardId)
+                            // console.log("newlist : " + newListId)
                             
                             const cardData = {
                                 cardId: cardId,
@@ -64,41 +81,51 @@
                       
                            
                         },
-                    });
+                    }).disableSelection();
+
+                    $(".board-lists").sortable({
+                        connectWith: ".list",
+                        containment: ".board-lists",
+                        helper: "clone",
+                        start: function (event, ui) {
+                            // Sürükleme işlemi başladığında yapılacak işlemler buraya gelecek
+                            ui.helper.addClass("dragging"); // Yardımcı öğeyi belirtmek için sınıf ekleyin
+                        },
+                        stop: function (event, ui) {
+                            // Sürükleme işlemi bittiğinde yapılacak işlemler buraya gelecek
+                            ui.item.removeClass("dragging"); // Yardımcı öğeden sınıfı kaldırın
+                        },
+                        update: function (event, ui) {
+                            // Sürükleme işlemi sırasında güncelleme işlemleri buraya gelecek
+                            // var cardId = ui.item.attr("data-card-id");
+                            // var newListId = ui.item.parent().parent().attr("data-list-id");
+                            // var newPosition = ui.item.index();
+                            console.log(ui.item);
+                            var newPosition = ui.item.index();
+                            var _listId = ui.item.attr("data-list-id")
+                            console.log(newPosition);
+
+                            const listData = {
+                                listId: _listId,
+                                position: newPosition,
+                            };
+
+
+                            $.ajax({
+                                url: "/List/updateListPosition",
+                                type: "POST",
+                                contentType: "application/json; charset=utf-8",
+                                data: JSON.stringify(listData),
+                                success: function (data) {
+                                    // sayfadaki cardları yeniden çek
+                                }
+                            });
+                            // AJAX isteği ile kartın pozisyonunu güncelleme işlemleri buraya gelecek
+                        },
+                    }).disableSelection();
                 },
             });
         });
-
-        function addListsAndCards(lists) {
-            for (var i = 0; i < lists.length; i++) {
-                var list = lists[i];
-                $(".board-lists").append(
-                    '<div class="list" data-list-id="' + list.id + '">' +
-                    '<div class="list-title">' +
-                    list.title +
-                    '</div>' +
-                    '<ul class="list-cards">' +
-                    // Kartları buraya ekleyeceksiniz
-                    '</ul>' +
-                    '</div>'
-                );
-
-                // Kartları ekle
-                for (var j = 0; j < list.cards.length; j++) {
-                    var card = list.cards[j];
-                    $(".list-cards").last().append(
-                        '<li class="card" data-card-id="' + card.id + '">' +
-                        '<div class="card-title">' +
-                        card.title +
-                        '</div>' +
-                        '<div class="card-description">' +
-                        card.description +
-                        '</div>' +
-                        '</li>'
-                    );
-                }
-            }
-        }
     </script>
 
 }

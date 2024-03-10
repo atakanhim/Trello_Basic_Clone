@@ -4,6 +4,7 @@ namespace trelloClone.MVC.Models
 {
     public class ListListViewModel
     {
+        public int Id { get; set; }
         public string Title { get; set; }
         public int Position { get; set; } // Sıralama bilgisi
         public List<CardDTO> Cards { get; set; }

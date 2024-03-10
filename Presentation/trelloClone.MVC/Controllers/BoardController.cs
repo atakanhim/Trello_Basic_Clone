@@ -35,6 +35,8 @@ namespace trelloClone.MVC.Controllers
         public async Task<IActionResult> BoardDetail(int id)
         {
             ViewBag.BoardId = id;
+            ViewBag.BoardName = "Board";
+        
 
             return View();
         }
@@ -45,7 +47,21 @@ namespace trelloClone.MVC.Controllers
         {
             var board = await _boardService.GetBoardWithIncludes(boardId);
             var listViewModel = _mapper.Map<BoardDTO, ListBoardIncludeViewModel>(board);
+
             return Ok(listViewModel);
+        }  
+        
+        [HttpGet]
+        [Route("Board/GetBoardWithIncludesPartial/{boardId?}")]
+        public async Task<IActionResult> GetBoardWithIncludesPartial( int boardId)
+        {
+            var board = await _boardService.GetBoardWithIncludes(boardId);
+            var listViewModel = _mapper.Map<BoardDTO, ListBoardIncludeViewModel>(board);
+
+            IEnumerable<ListListViewModel> liste = _mapper.Map<IEnumerable<ListDTO>, IEnumerable<ListListViewModel>>(listViewModel.Lists);
+            ViewBag.BoardName = "asdsadasd";
+
+            return PartialView(@"~/Views/Board/_RenderLists.cshtml", liste);
         }
     }
 }
