@@ -12,9 +12,10 @@
         <div class="col-md-12">
             <div class="board">
                 <div class="board-title">
-                    <h2>Board Başlığı</h2>
+                    <h2 id="boardH2"></h2>
                 </div>
-                <div class="board-lists">
+                <div class="board-lists" id="listelervecardlar">
+                    @* kartlar ve listeler listeneliyor *@
                 </div>
             </div>
         </div>
@@ -29,35 +30,10 @@
                 url: "/Board/GetBoardWithIncludes/" + @ViewBag.BoardId,
                 type: "GET",
                 success: function (data) {
-                    // Listeleri ekle
-                    for (var i = 0; i < data.lists.length; i++) {
-                        var list = data.lists[i];
-                        $(".board-lists").append(
-                            '<div class="list" data-list-id="' + list.id + '">' +
-                            '<div class="list-title">' +
-                            list.title +
-                            '</div>' + 
-                            '<ul class="list-cards">' +
-                            // Kartları buraya ekleyeceksiniz
-                            '</ul>' +
-                            '</div>'
-                        );
+                    $("#boardH2").text(data.boardName);
 
-                        // Kartları ekle
-                        for (var j = 0; j < list.cards.length; j++) {
-                            var card = list.cards[j];
-                            $(".list-cards").last().append(
-                                '<li class="card" data-card-id="' + card.id + '">' +
-                                '<div class="card-title">' +
-                                card.title +
-                                '</div>' +
-                                '<div class="card-description">' +
-                                card.description +
-                                '</div>' +
-                                '</li>'
-                            );
-                        }
-                    }
+                    addListsAndCards(data.lists);
+
 
                     // Sıralama işlevini ekle
                     $(".list-cards").sortable({
@@ -68,34 +44,61 @@
                             var newPosition = ui.item.index();
                             var cardId = ui.item.attr("data-card-id");
                             var newListId = ui.item.parent().parent().attr("data-list-id");
-                            console.log("-------------------------");
-                            console.log("bulundugu listId :"+ newListId);
-                            console.log("oynatılan cardId :"+ cardId);
-                            console.log("bulundugu index:" + newPosition);
-                            console.log("-------------------------");
-
-                            // Her kartın position değerini güncelle
+  
+                            
                             const cardData = {
                                 cardId: cardId,
-                                listId: newListId, // Assuming newListId is available from previous code
+                                listId: newListId, 
                                 position: newPosition,
                             };
 
                             $.ajax({
                                 url: "/Card/updateCardPosition",
                                 type: "POST",
-                                contentType: "application/json; charset=utf-8", // Specify JSON data
-                                data: JSON.stringify(cardData), // Convert data object to JSON string
+                                contentType: "application/json; charset=utf-8", 
+                                data: JSON.stringify(cardData), 
+                                success: function (data) {
+                                    // sayfadaki cardları yeniden çek
+                                }
                             });
                       
-                            // Kartın güncellenmiş bilgilerini sunucuya gönder
                            
                         },
-                    }).sortable("enable");
+                    });
                 },
             });
         });
 
+        function addListsAndCards(lists) {
+            for (var i = 0; i < lists.length; i++) {
+                var list = lists[i];
+                $(".board-lists").append(
+                    '<div class="list" data-list-id="' + list.id + '">' +
+                    '<div class="list-title">' +
+                    list.title +
+                    '</div>' +
+                    '<ul class="list-cards">' +
+                    // Kartları buraya ekleyeceksiniz
+                    '</ul>' +
+                    '</div>'
+                );
+
+                // Kartları ekle
+                for (var j = 0; j < list.cards.length; j++) {
+                    var card = list.cards[j];
+                    $(".list-cards").last().append(
+                        '<li class="card" data-card-id="' + card.id + '">' +
+                        '<div class="card-title">' +
+                        card.title +
+                        '</div>' +
+                        '<div class="card-description">' +
+                        card.description +
+                        '</div>' +
+                        '</li>'
+                    );
+                }
+            }
+        }
     </script>
 
 }

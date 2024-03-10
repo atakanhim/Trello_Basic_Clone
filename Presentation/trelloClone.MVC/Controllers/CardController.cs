@@ -28,9 +28,14 @@ namespace trelloClone.MVC.Controllers
         public async Task<IActionResult> UpdateCardPosition([FromBody] UpdateCardPositionViewModel model)
         {
             UpdateCardPositionDTO updateCardPositionDTO = _mapper.Map<UpdateCardPositionViewModel, UpdateCardPositionDTO>(model);
+            IEnumerable<ListDTO> listdto = await _cardService.UpdateCard(updateCardPositionDTO);
 
-            await _cardService.UpdateCard(updateCardPositionDTO);
-            return Ok();
+            IEnumerable<ListListViewModel> listViewmodel = _mapper.Map<IEnumerable<ListDTO>,IEnumerable<ListListViewModel> >(listdto);
+
+
+
+
+            return Ok(listViewmodel);
         }
     }
 }

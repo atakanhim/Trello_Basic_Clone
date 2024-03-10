@@ -2,10 +2,14 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 10px;
+    display:flex;
+    flex-direction:column;
+    
 }
 
 .board-title {
     margin-bottom: 10px;
+    text-align:center;
 }
 
 .board-lists {

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,11 +17,13 @@ namespace trelloClone.Persistence.Services
     {
         private readonly ICardRepository _cardRepository;
         private readonly IListRepository _listRepository;
+        private readonly IMapper _mapper;
 
-        public CardService(ICardRepository cardRepository, IListRepository listRepository)
+        public CardService(ICardRepository cardRepository, IListRepository listRepository, IMapper mapper)
         {
             _cardRepository = cardRepository;
             _listRepository = listRepository;
+            _mapper = mapper;
         }
         public async Task CreateCard(string title,string desc, int listId)
         {
@@ -33,13 +36,11 @@ namespace trelloClone.Persistence.Services
             }
             catch (Exception)
             {
-
-                throw;
-
+               throw;
             }
         }
 
-        public async Task UpdateCard(UpdateCardPositionDTO updateCard)
+        public async Task<IEnumerable<ListDTO>> UpdateCard(UpdateCardPositionDTO updateCard)
         {
             try
             {
@@ -52,22 +53,22 @@ namespace trelloClone.Persistence.Services
                 }
                 else
                 {
+                    // eger baska bir listeye ekliyorsa ve kendi listesinden siliniyorsa
                     var oldList = await _listRepository.Table.Include(y => y.Cards.OrderBy(z => z.Position)).Where(c => c.Id == oldCard.ListId).FirstOrDefaultAsync();
                     var newList = await _listRepository.Table.Include(y => y.Cards.OrderBy(z => z.Position)).Where(c => c.Id == updateCard.ListId).FirstOrDefaultAsync();
-                            
-                    oldCard.ListId = newList.Id;
-                    await _listRepository.SaveAsync();
 
-                    // await fonksiyon(oldCard.Position, newCardIndex, updateCard.CardId, list);
+                    // listeid degisistiriyorum
+                        oldCard.ListId = newList.Id;
+                        await _listRepository.SaveAsync();
 
                     // Eski listedeki kartların pozisyonlarını güncelle
-                    int newPosition = 0;
-                    foreach (var card in oldList.Cards)
-                    {
-                        card.Position = newPosition;
-                        newPosition++;
-                    }
-                    await _listRepository.SaveAsync();
+                        int newPosition = 0;
+                        foreach (var card in oldList.Cards)
+                        {
+                            card.Position = newPosition;
+                            newPosition++;
+                        }
+                        await _listRepository.SaveAsync();
 
                     // yeni listesine eklenecek 
 
@@ -82,7 +83,6 @@ namespace trelloClone.Persistence.Services
                             await _cardRepository.SaveAsync();
 
                         }
-
                         Card newCartt = await _cardRepository.GetAsync(x => x.Id == oldCard.Id);
                         newCartt.Position = newCardIndex;
                         await _cardRepository.SaveAsync();
@@ -93,14 +93,22 @@ namespace trelloClone.Persistence.Services
                         newCart.Position = 0;
                         await _cardRepository.SaveAsync();
                     }
+
                 }
 
+                IEnumerable<List> lists= await _listRepository.Table.Include(y => y.Cards.OrderBy(z => z.Position)).ToListAsync();
+                IEnumerable<ListDTO> listsDTO = _mapper.Map<IEnumerable<List>, IEnumerable<ListDTO>>(lists);
+                return listsDTO;
             }
             catch (Exception ex)
             {
                 throw;
             }
 
+
+
+
+           
         }
         private async Task fonksiyon(int oldCardIndex,int newCardIndex,int CardId,List list)
         {

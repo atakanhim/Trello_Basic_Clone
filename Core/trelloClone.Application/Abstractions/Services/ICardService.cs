@@ -10,6 +10,6 @@ namespace trelloClone.Application.Abstractions.Services
     public interface ICardService
     {
         Task CreateCard(string title, string desc, int listId);
-        Task UpdateCard(UpdateCardPositionDTO updateCard);
+        Task<IEnumerable<ListDTO>> UpdateCard(UpdateCardPositionDTO updateCard);
     }
 }
