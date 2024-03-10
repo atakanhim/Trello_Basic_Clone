@@ -6,6 +6,7 @@
 }
 <head>
     <link rel="stylesheet" href="~/css/BoardDetail.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/BoardDetailModal.css" asp-append-version="true" />
 </head>
 <div class="container">
     <div class="row">
@@ -85,15 +86,15 @@
 
                     $(".board-lists").sortable({
                         connectWith: ".list",
-                        containment: ".board-lists",
                         helper: "clone",
+                        placeholder: "sortable-placeholder",
                         start: function (event, ui) {
                             // Sürükleme işlemi başladığında yapılacak işlemler buraya gelecek
-                            ui.helper.addClass("dragging"); // Yardımcı öğeyi belirtmek için sınıf ekleyin
+                            ui.helper.addClass("draggingList"); // Yardımcı öğeyi belirtmek için sınıf ekleyin
                         },
                         stop: function (event, ui) {
                             // Sürükleme işlemi bittiğinde yapılacak işlemler buraya gelecek
-                            ui.item.removeClass("dragging"); // Yardımcı öğeden sınıfı kaldırın
+                            ui.item.removeClass("draggingList"); // Yardımcı öğeden sınıfı kaldırın
                         },
                         update: function (event, ui) {
                             // Sürükleme işlemi sırasında güncelleme işlemleri buraya gelecek
@@ -124,6 +125,30 @@
                         },
                     }).disableSelection();
                 },
+            });
+        });
+    </script>
+
+    
+    <script>
+        $(document).ready(function () {
+            // Modalı açan butonun click olayı
+            $("#openModalBtn").click(function () {
+                alert("alerttt")
+
+                $("#myModal").css("display", "block"); // Modalı görünür yapar
+            });
+
+            // Kapatma düğmesine tıklandığında, modalı gizler
+            $(".close").click(function () {
+                $("#myModal").css("display", "none");
+            });
+
+            // Kullanıcı modalın dışına tıkladığında, modalı gizler
+            $(window).click(function (event) {
+                if (event.target.id === "myModal") {
+                    $("#myModal").css("display", "none");
+                }
             });
         });
     </script>

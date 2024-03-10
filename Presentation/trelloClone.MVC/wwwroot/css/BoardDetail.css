@@ -6,7 +6,19 @@
     flex-direction:column;
     
 }
+.sortable-placeholder {
+    background-color: #f2f2f2; /* Arka plan rengi */
+    border: 2px dashed #ccc; /* Kenarlık */
+   /* Genişlik */
+   min-width:200px;
+    height: 50px; /* Yükseklik */
+    opacity: 0.1; /* Opaklık */
+    color: #333; /* Metin rengi */
+    text-align: center; /* Metni ortala */
+    line-height: 50px; /* Metin yüksekliği */
+    font-size: 16px; /* Metin boyutu */
 
+}
 .board-title {
     margin-bottom: 10px;
     text-align:center;
@@ -14,11 +26,13 @@
 .dragging {
     transform: rotate(15deg); 
 }
+.draggingList {
+    transform: rotate(5deg);
+}
 .board-lists {
     list-style: none;
-    display:flex;
-    padding: 10px;
-    border:1px solid blue;
+    display: flex;
+    flex-wrap:wrap;
 }
 
 /* Temel stiller */
@@ -26,10 +40,9 @@
     background-color: #ebecf0;
     border-radius: 5px;
     width: 250px;
-    margin-right: 10px;
-    display: inline-block;
-    vertical-align: top;
-    padding: 15px;
+    padding: 5px;
+    margin: 15px;
+    cursor: pointer;
     list-style-type: none;
 }
 
