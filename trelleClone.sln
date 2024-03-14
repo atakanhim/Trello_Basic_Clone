@@ -9,15 +9,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{B0EE2EB7-1F35-4837-8A50-1ABF0064CF03}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "trelloClone.Infrastructure", "Infrastructure\trelloClone.Infrastructure\trelloClone.Infrastructure.csproj", "{F3E3777D-01EB-45E5-9BF0-DC11D51941CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "trelloClone.Infrastructure", "Infrastructure\trelloClone.Infrastructure\trelloClone.Infrastructure.csproj", "{F3E3777D-01EB-45E5-9BF0-DC11D51941CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "trelloClone.Persistence", "Infrastructure\trelloClone.Persistence\trelloClone.Persistence.csproj", "{E0BF9B51-20D2-40C0-899B-B4E9AC0C80D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "trelloClone.Persistence", "Infrastructure\trelloClone.Persistence\trelloClone.Persistence.csproj", "{E0BF9B51-20D2-40C0-899B-B4E9AC0C80D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "trelloClone.Application", "Core\trelloClone.Application\trelloClone.Application.csproj", "{A2F77B6C-A0DD-4E3D-8AE3-688D35BCF1FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "trelloClone.Application", "Core\trelloClone.Application\trelloClone.Application.csproj", "{A2F77B6C-A0DD-4E3D-8AE3-688D35BCF1FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "trelloClone.Domain", "Core\trelloClone.Domain\trelloClone.Domain.csproj", "{257CE016-3635-4E98-87FB-030A399E9F95}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "trelloClone.Domain", "Core\trelloClone.Domain\trelloClone.Domain.csproj", "{257CE016-3635-4E98-87FB-030A399E9F95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "trelloClone.MVC", "Presentation\trelloClone.MVC\trelloClone.MVC.csproj", "{BB2C914C-B402-4287-AA2D-575180B81B14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "trelloClone.MVC", "Presentation\trelloClone.MVC\trelloClone.MVC.csproj", "{BB2C914C-B402-4287-AA2D-575180B81B14}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -11,6 +11,8 @@ using Serilog;
 using Serilog.Sinks.MSSqlServer;
 using System.Data;
 using System.Security.Claims;
+using System.Collections.ObjectModel;
+using Serilog.Events;
 
 internal class Program
 {
@@ -53,14 +55,11 @@ internal class Program
         });
 
         //log ekleme
-        Log.Logger = new LoggerConfiguration()
-               .WriteTo
-               .MSSqlServer(
-                   connectionString: builder.Configuration["ConnectionStrings:MsSQL"],
-                   sinkOptions: new MSSqlServerSinkOptions { TableName = "LogEvents" })
-               .CreateLogger();
-
-
+   
+        builder.Host.UseSerilog((hostingContext,loggerConfig) =>
+        {
+            loggerConfig.ReadFrom.Configuration(hostingContext.Configuration);
+        });
         // log bitis
         builder.Services.ConfigureApplicationCookie(options =>
         {
@@ -70,6 +69,7 @@ internal class Program
 
         //token end
         builder.Services.AddAutoMapper(typeof(PresentationTrelloProfile));
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -80,14 +80,11 @@ internal class Program
             app.UseHsts();
         }
         app.ConfigureExceptionHandler(app.Services.GetRequiredService<ILogger<Program>>());
-
         app.UseAuthentication();
         app.UseHttpsRedirection();
         app.UseStaticFiles();
         app.UseSession();
-
         app.UseRouting();
-
         app.UseAuthorization();
         app.UseEndpoints(endpoints =>
         {

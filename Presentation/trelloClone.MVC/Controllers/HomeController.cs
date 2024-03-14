@@ -50,6 +50,10 @@ namespace trelloClone.MVC.Controllers
         }
         public IActionResult Index()
         {
+            _logger.LogInformation("Bu bir bilgi mesajýdýr. {Category}", "Home");
+
+
+
             return View();
         }
      
