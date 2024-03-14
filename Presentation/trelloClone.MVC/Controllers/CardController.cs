@@ -9,7 +9,7 @@ using trelloClone.Persistence.Services;
 
 namespace trelloClone.MVC.Controllers
 {
-  //  [Authorize]
+   [Authorize]
     public class CardController : Controller
     {
         private readonly ICardService _cardService;

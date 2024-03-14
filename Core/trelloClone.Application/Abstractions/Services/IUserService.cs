@@ -11,7 +11,7 @@ namespace trelloClone.Application.Abstractions.Services
     public interface IUserService
     {
         Task<bool> IsUserExists(string usurId);
-        Task<CreateUserResponse> CreateAsync(CreateUser model);
+        Task<CreateUserResponse> CreateAsync(CreateUserDTO model);
         Task UpdateRefreshTokenAsync(string? refreshToken, AppUser user, DateTime? accessTokenDate, int addOnAccessTokenDate);
 
         int TotalUsersCount { get; }

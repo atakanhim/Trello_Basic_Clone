@@ -7,3 +7,16 @@
      ANASAYFA
 
 </div>
+
+<!-- Anime Section End -->
+@section Scripts {
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>
+     
+            Swal.fire('@TempData["SuccessMessage"]', "Başarılı", "success");
+        </script>
+    }
+
+
+}

@@ -1,4 +1,4 @@
-using trelloClone.Presentation.Mappings;
+ï»¿using trelloClone.Presentation.Mappings;
 using trelloClone.Application;
 using trelloClone.Infrastructure;
 using trelloClone.Persistence;
@@ -6,74 +6,97 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using itApp.API.Extensions;
+using Serilog.Core;
+using Serilog;
+using Serilog.Sinks.MSSqlServer;
+using System.Data;
+using System.Security.Claims;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-builder.Services.AddHttpClient();
-
-// ioc container islemleri
-builder.Services.AddApplicationServices();
-builder.Services.AddInfrastructureServices();
-builder.Services.AddPersistenceServices();
-// ioc container islemleri
-builder.Services.AddSession();
-//token
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-.AddJwtBearer(options =>
+internal class Program
 {
-    options.TokenValidationParameters = new TokenValidationParameters
+    private static void Main(string[] args)
     {
-        ValidateAudience = true,
-        ValidateIssuer = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidAudience = builder.Configuration["Token:Audience"],
-        ValidIssuer = builder.Configuration["Token:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SecurityKey"]))
-    };
-});
-// Authorization politikalarýný ekleyin
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("RequireLoggedIn", policy => policy.RequireAuthenticatedUser());
-});
+        var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.LoginPath = "/Home/Login"; // Oturum açma sayfasýnýn yolu
-    options.AccessDeniedPath = "/AccessDenied"; // Yetki reddedildiðinde yönlendirilecek sayfanýn yolu
-});
+        // Add services to the container.
+        builder.Services.AddControllersWithViews();
+        builder.Services.AddHttpClient();
 
-//token end
-builder.Services.AddAutoMapper(typeof(PresentationTrelloProfile));
-var app = builder.Build();
+        // ioc container islemleri
+        builder.Services.AddApplicationServices();
+        builder.Services.AddInfrastructureServices();
+        builder.Services.AddPersistenceServices();
+        // ioc container islemleri
+        builder.Services.AddSession();
+        //token
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = true,
+                ValidateIssuer = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidAudience = builder.Configuration["Token:Audience"],
+                ValidIssuer = builder.Configuration["Token:Issuer"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SecurityKey"])),
+                NameClaimType = ClaimTypes.Name //JWT ï¿½zerinde Name claimne karï¿½ï¿½lï¿½k gelen deï¿½eri User.Identity.Name propertysinden elde edebiliriz.
+
+            };
+        });
+        // Authorization politikalarÄ±nÄ± ekleyin
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("RequireLoggedIn", policy => policy.RequireAuthenticatedUser());
+        });
+
+        //log ekleme
+        Log.Logger = new LoggerConfiguration()
+               .WriteTo
+               .MSSqlServer(
+                   connectionString: builder.Configuration["ConnectionStrings:MsSQL"],
+                   sinkOptions: new MSSqlServerSinkOptions { TableName = "LogEvents" })
+               .CreateLogger();
+
+
+        // log bitis
+        builder.Services.ConfigureApplicationCookie(options =>
+        {
+            options.LoginPath = "/Home/Login"; // Oturum aÃ§ma sayfasÄ±nÄ±n yolu
+            options.AccessDeniedPath = "/AccessDenied"; // Yetki reddedildiÄŸinde yÃ¶nlendirilecek sayfanÄ±n yolu
+        });
+
+        //token end
+        builder.Services.AddAutoMapper(typeof(PresentationTrelloProfile));
+        var app = builder.Build();
+
+        // Configure the HTTP request pipeline.
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseExceptionHandler("/Home/Error");
+            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            app.UseHsts();
+        }
+        app.ConfigureExceptionHandler(app.Services.GetRequiredService<ILogger<Program>>());
+
+        app.UseAuthentication();
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+        app.UseSession();
+
+        app.UseRouting();
+
+        app.UseAuthorization();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+        });
+
+
+        app.Run();
+    }
 }
-app.ConfigureExceptionHandler<Program>(app.Services.GetRequiredService<ILogger<Program>>());
-
-app.UseAuthentication();
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseSession();
-
-app.UseRouting();
-
-app.UseAuthorization();
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}");
-});
-
-
-app.Run();

@@ -36,10 +36,10 @@ namespace trelloClone.MVC.Controllers
         // api 
         [HttpPost]
         [Route("CreateUser")]
-        public async Task<IActionResult> CreateUser([FromBody] CreateUser model)
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserViewModel model)
         {
 
-            var response = await _userService.CreateAsync(model);
+            var response = await _userService.CreateAsync(new CreateUserDTO { Email = model.Email,Username=model.Username,Password=model.Password,PasswordConfirm=model.PasswordConfirm});
             // Kullanýcý doðrulandý, giriþ baþarýlý
             // Örnek olarak, bir session oluþturabilirsiniz.
 
@@ -48,40 +48,11 @@ namespace trelloClone.MVC.Controllers
             return Ok(response);
 
         }
-        [HttpPost]
-        [Route("CreateBoard")]
-        public async Task<IActionResult> CreateBoard([FromBody] CreateBoardViewModel model)
-        {
-            await _boardService.CreateBoard(model.BoardName, model.AppUserId);
-            // Kullanýcý doðrulandý, giriþ baþarýlý
-            // Örnek olarak, bir session oluþturabilirsiniz.
-
-
-
-            return Ok("Eklendi");
-
-        }    
-  
-        [HttpPost]
-        [Route("CreateCard")]
-        public async Task<IActionResult> CrateCard([FromBody] CreateCardViewModel model)
-        {
-
-            await _cardService.CreateCard(model.Title,model.Description, model.ListId);
-
-
-
-            return Ok("Eklendi");
-
-        }
-        /// <summary>
-        /// api bitis
-        /// </summary>
-        /// <returns></returns>
         public IActionResult Index()
         {
             return View();
         }
+     
         [HttpGet]
         public IActionResult Login()
         {
@@ -95,19 +66,50 @@ namespace trelloClone.MVC.Controllers
                 var token = await _authService.LoginAsync(model.username, model.password);
                 return RedirectToAction("Index");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                ViewData["ErrorMessage"] = ex.Message??"hatali giris" ;
+                ViewData["ErrorMessage"] = ex.Message ?? "hatali giris";
                 return View();
             }
-      
-        }          
+
+        }
+
+        [HttpGet]
+        public IActionResult SignUp()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> SignUp(CreateUserDTO model)
+        {
+            try
+            {
+                var response = await _userService.CreateAsync(model);
+                // Kullanýcý doðrulandý, giriþ baþarýlý
+                // Örnek olarak, bir session oluþturabilirsiniz.
+                if(response.Succeeded)
+                TempData["SuccessMessage"] = "Baþarý ile üye olundu.";
+                else
+                {
+                    TempData["ErrorMessage"] = response.Message;
+                    return View();
+                }
+                return RedirectToAction("Index");
+            }
+            catch (Exception)
+            {
+                ViewData["ErrorMessage"] = "Hatali giris";    
+                return View();
+            }
+
+        }
+ 
         [HttpPost]
         public async Task<IActionResult> Logout()
         {          
                 await _authService.LogoutAsync();
-                return RedirectToAction("Privacy");            
+                return RedirectToAction("Index");            
         }      
         
 

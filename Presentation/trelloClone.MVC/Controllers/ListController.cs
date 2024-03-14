@@ -7,7 +7,7 @@ using trelloClone.MVC.Models;
 
 namespace trelloClone.MVC.Controllers
 {
-  //  [Authorize]
+  [Authorize]
     public class ListController : Controller
     {
         private readonly IMapper _mapper;

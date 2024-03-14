@@ -26,9 +26,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Board" asp-action="Index">Board</a>
-                        </li>
+                   
                         @if (SignInManager.IsSignedIn(User))
                         {
                           
@@ -37,13 +35,18 @@
                                     <button class="btn btn-link sidebar__bottom" type="submit">LogOut  <i class="fa fa-sign-out" aria-hidden="true"></i></button>
                                 </form>
                             </li>
-
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Board" asp-action="Index">Board</a>
+                            </li>
 
                         }
                         else
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="SignUp">Üye Ol</a>
                             </li>
 
                         }

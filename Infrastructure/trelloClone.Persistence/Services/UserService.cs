@@ -21,7 +21,7 @@ namespace trelloClone.Persistence.Services
             _mapper = mapper;
         }
         public int TotalUsersCount => throw new NotImplementedException();
-        public async Task<CreateUserResponse> CreateAsync(CreateUser model)
+        public async Task<CreateUserResponse> CreateAsync(CreateUserDTO model)
         {
             IdentityResult result = await _userManager.CreateAsync(new()
             {

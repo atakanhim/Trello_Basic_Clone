@@ -1,8 +1,6 @@
-﻿
-
-namespace trelloClone.Application.Contracts
+﻿namespace trelloClone.MVC.Models
 {
-    public class CreateUser
+    public class CreateUserViewModel
     {
         public string Username { get; set; }
         public string Email { get; set; }
