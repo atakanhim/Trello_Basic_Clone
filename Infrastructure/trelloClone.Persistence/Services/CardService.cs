@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,17 +19,20 @@ namespace trelloClone.Persistence.Services
         private readonly ICardRepository _cardRepository;
         private readonly IListRepository _listRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<CardService> _logger;
 
-        public CardService(ICardRepository cardRepository, IListRepository listRepository, IMapper mapper)
+        public CardService(ICardRepository cardRepository, IListRepository listRepository, IMapper mapper, ILogger<CardService> logger)
         {
             _cardRepository = cardRepository;
             _listRepository = listRepository;
             _mapper = mapper;
+            _logger = logger;
         }
         public async Task CreateCard(string title,string desc, int listId)
         {
             try
             {
+
                 var card = new Card() { ListId = listId, Title = title, Description = desc};
                 var cardList = await _cardRepository.GetListAsync();
                 if (!(cardList == null || cardList.Count == 0))
@@ -38,9 +42,9 @@ namespace trelloClone.Persistence.Services
                 }
 
 
-
                 await _cardRepository.AddAsync(card);
                 await _cardRepository.SaveAsync();
+                _logger.LogInformation("Kart Oluşturuldu. ListId:{listId} {Action}", listId, "");
 
 
 
@@ -62,6 +66,7 @@ namespace trelloClone.Persistence.Services
 
                 _cardRepository.Delete(card);
                 await _cardRepository.SaveAsync();
+                _logger.LogInformation("Kart Silindi. CardId:{cardId}  {Action}", cardId, "DeleteCart");
 
 
                 int cardBulunduguListId = card.ListId;
@@ -167,6 +172,7 @@ namespace trelloClone.Persistence.Services
                 }
 
 
+                _logger.LogInformation("Updated Card. CardId:{cardId} {Action}", updateCard.CardId, "UpdateCard");
 
                 IEnumerable<List> lists= await _listRepository.Table.Include(y => y.Cards.OrderBy(z => z.Position)).ToListAsync();
                 IEnumerable<ListDTO> listsDTO = _mapper.Map<IEnumerable<List>, IEnumerable<ListDTO>>(lists);

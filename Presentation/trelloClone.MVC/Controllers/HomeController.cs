@@ -17,40 +17,18 @@ namespace trelloClone.MVC.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IUserService _userService;
         private readonly IAuthService _authService;
-        private readonly IBoardService _boardService;
-        private readonly IListService _listService;
-        private readonly ICardService _cardService;
-        private readonly HttpClient _httpClient;
 
-        public HomeController(ILogger<HomeController> logger, IUserService userService, HttpClient httpClient, IAuthService authService, IBoardService boardService, IListService listService, ICardService cardService)
+
+        public HomeController(ILogger<HomeController> logger, IUserService userService, IAuthService authService)
         {
             _logger = logger;
             _userService = userService;
-            _httpClient = httpClient;
             _authService = authService;
-            _boardService = boardService;
-            _listService = listService;
-            _cardService = cardService;
+   
         }
 
-        // api 
-        [HttpPost]
-        [Route("CreateUser")]
-        public async Task<IActionResult> CreateUser([FromBody] CreateUserViewModel model)
-        {
-
-            var response = await _userService.CreateAsync(new CreateUserDTO { Email = model.Email,Username=model.Username,Password=model.Password,PasswordConfirm=model.PasswordConfirm});
-            // Kullanýcý doðrulandý, giriþ baþarýlý
-            // Örnek olarak, bir session oluþturabilirsiniz.
-
-
-
-            return Ok(response);
-
-        }
         public IActionResult Index()
         {
-            _logger.LogInformation("Bu bir bilgi mesajýdýr. {Category}", "Home");
 
 
 
@@ -67,13 +45,18 @@ namespace trelloClone.MVC.Controllers
         {
             try
             {
+
                 var token = await _authService.LoginAsync(model.username, model.password);
+
+
+                _logger.LogInformation("Login Yapýldý. {Action} {UserName}", "Home/Login",model.username);
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 ViewData["ErrorMessage"] = ex.Message ?? "hatali giris";
+                _logger.LogError("Hatalý Login. {Action} denenen isim {UserName}", "Home/Login",model.username);
                 return View();
             }
 
@@ -108,11 +91,13 @@ namespace trelloClone.MVC.Controllers
             }
 
         }
- 
+
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Logout()
-        {          
-                await _authService.LogoutAsync();
+        {
+            _logger.LogInformation("logout Yapýldý. {Action} {UserName}", "Home/Logout", User?.Identity?.Name);
+            await _authService.LogoutAsync();
                 return RedirectToAction("Index");            
         }      
         
@@ -120,6 +105,7 @@ namespace trelloClone.MVC.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
+
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
